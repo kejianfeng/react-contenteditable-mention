@@ -1,0 +1,15 @@
+.mention-basic {
+  outline: none;
+  padding: 10px;
+  border: 1px solid #aaa;
+  /* max-width: 800px; */
+  border-radius: 4px;
+}
+
+.mention-basic:empty:before{
+  content: attr(placeholder);
+  color: #CCCCCC;
+}
+.mention-basic:focus{
+  content:none;
+}
