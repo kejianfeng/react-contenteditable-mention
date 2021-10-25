@@ -1,8 +1,7 @@
 import commonjs from '@rollup/plugin-commonjs'
-import typescript from 'rollup-plugin-typescript'
+import typescript from 'rollup-plugin-typescript2'
 import babel from 'rollup-plugin-babel'
 import {terser} from 'rollup-plugin-terser';
-import autoprefixer from 'autoprefixer';
 import postcss from 'rollup-plugin-postcss';
 
 // import css from 'rollup-plugin-css-only'
@@ -19,7 +18,8 @@ export default {
     babel({
       exclude: 'node_modules/**'
     }),
-    typescript(),
+    typescript({
+    }),
     postcss({
       extensions: [ '.css' ],
       // plugins: [autoprefixer()],

@@ -1,11 +1,25 @@
 {
   "name": "react-contenteditable-mention",
-  "version": "1.9.0",
+  "version": "2.0.0",
   "main": "./lib/index.js",
   "license": "MIT",
   "scripts": {
     "build": "npx rollup -c rollup.config.js"
   },
+  "homepage": "https://github.com/kejianfeng/react-contenteditable-mention",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kejianfeng/react-contenteditable-mention"
+  },
+  "keywords": [
+    "react-component",
+    "contenteditable",
+    "editable",
+    "html",
+    "react",
+    "mention",
+    "@"
+  ],
   "dependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
@@ -28,6 +42,7 @@
     "rollup-plugin-postcss": "^4.0.1",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-typescript2": "^0.30.0",
     "typescript": "^4.4.3"
   }
 }

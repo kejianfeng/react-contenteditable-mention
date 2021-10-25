@@ -1,21 +1,79 @@
 react-contenteditable-mention
 =====================
+基于react-contenteditable及tributejs开发的React组件，支持@等mention功能, 与rc-mention的最大不同的本组件本质是富文本编辑，可支持@人高亮，模板定制，显示链接及图片等，而rc-mention本质内容就是基于textarea开发的文本组件，纯字符串不能满足我们对富文本的要求。
 
-React component for a div with editable contents ,
-and supports @mention everything you want!
 
 [![download count](https://img.shields.io/badge/-react--contenteditable--mention-brightgreen.svg)](https://www.npmjs.com/package/react-contenteditable-mention)
 [![bundle size](https://img.shields.io/badge/-react--contenteditable--mention-yellow.svg)](https://www.npmjs.com/package/react-contenteditable-mention)
 <!-- [![license](https://img.shields.io/github/license/lovasoa/react-contenteditable.svg)](https://github.com/lovasoa/react-contenteditable/blob/master/LICENSE) -->
 
 
-## Install
+## 安装
 
 ```sh
 npm install react-contenteditable-mention
+
 ```
 
-## Usage
+## 组件传参
+
+|prop|描述|数据类型|
+|--|----|----|
+|innerRef|元素的 [`ref` attribute](https://reactjs.org/docs/refs-and-the-dom.html)|Object \| Function|
+|html|**required:** 编辑元素的innerHTML|String|
+|disabled|是否禁用编辑|Boolean|
+|onChange|当`innerHTML`改变时触发|Function|
+|onBlur|失焦时触发 [blurred](https://developer.mozilla.org/en-US/docs/Web/Events/blur)|Function|
+|onFocus|获得焦点时触发 [focus](https://developer.mozilla.org/en-US/docs/Web/API/Element/focus_event)|Function|
+|onKeyUp|按键弹起时触发|Function|
+|onKeyDown|按键被按下时触发 |Function|
+|className|元素的className|String|
+|TributeOptions|mention配置选项，参考[tributejs](https://www.npmjs.com/package/tributejs)选项|
+
+### TributeOptions
+```
+参考 [tributejs](https://www.npmjs.com/package/tributejs)文档
+export interface ITribute {
+    trigger?: string; 
+    selectClass?: string;
+    containerClass?: string;
+    itemClass?: string;
+    selectTemplate?: (item: TributeItem<any>) => string;
+    menuItemTemplate?: (item: TributeItem<any>) => string;
+    noMatchTemplate?: () => string;
+    menuContainer?: Element;
+    lookup?: string | ((item: any, mentionText: string) => string);
+    fillAttr?: string;
+    values: Array<{
+        [key: string]: any;
+    }> | ((text: string, cb: (result: Array<{
+        [key: string]: any;
+    }>) => void) => void);
+    requireLeadingSpace?: boolean;
+    allowSpaces?: boolean;
+    replaceTextSuffix?: string;
+    positionMenu?: boolean;
+    autocompleteMode?: boolean;
+    searchOpts?: TributeSearchOpts;
+    menuShowMinLength?: number;
+}
+
+export declare type TributeItem<T extends {}> = {
+    index: number;
+    original: T;
+    score: number;
+    string: string;
+};
+
+export type TributeSearchOpts = {
+  pre: string;
+  post: string;
+  skip: boolean;
+};
+```
+
+
+## 例子
 
 ```javascript
 import React, { useState } from 'react';
@@ -101,9 +159,24 @@ const BaseInfo: React.FC<IAppProps> = (props) => {
 };
 ```
 
-## Examples
+## 特别说明
 
-You can try **react-contenteditable-mention** right from your browser to see if it fits your project's needs:
+一般来说，我们做@功能有两种情况，一种是数据源不变，另一种是数据源根据实时查询的结果而改变
+### 1. 静态数据
+如果是`数据源不变`，直接在TributeOptions里定义values即可，@的内容作为列表搜索关键词，筛选的结果会更新到菜单选项中
 
- <!-- * [Simple example](https://codesandbox.io/s/4rlw34mnk7) : just an editable `<div>` with a default value.
- * [Advanced example](https://codesandbox.io/s/l91xvkox9l) : custom tag, input sanitization, and rich text edition. -->
+### 2. 远程加载数据
+若是远程加载数据，且根据@的内容实时查询数据，则values便是函数，形如：
+```
+values: (text, cb) => { // text为搜索关键词如 @abc, 则text为abc, cb为内置的回调，只需把最新的列表作为参数传入，菜单选项便会更新， remoteSearch为自定义的请求函数
+  remoteSearch(text, users => cb(users));
+}
+```
+
+注意：如果仅是想替换掉列表，searchOpts里面的skip需设置为true，意为不需对请求回来的结果进行筛选，如：
+
+```
+searchOpts： {
+  skip:true
+}
+```

@@ -1,14 +1,22 @@
-import React, {useEffect, useMemo, useRef}from 'react';
+import React, { useEffect, useMemo, useRef } from "react";
 import Tribute from "tributejs";
-import {TributeSearchOpts, TributeCollection, TributeOptions} from 'tributejs'
-import ContentEditable from 'react-contenteditable'
+import {
+  TributeSearchOpts,
+  TributeCollection,
+  TributeOptions,
+} from "tributejs";
+import ContentEditable from "react-contenteditable";
 // import ImageUploader from 'react-images-upload';
-import './style.css'
+import "./style.css";
 
-export type ContentEditableEvent = React.SyntheticEvent<any, Event> & { target: { value: string } };
-type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
-type DivProps = Modify<JSX.IntrinsicElements["div"], { onChange: ((event: ContentEditableEvent) => void) }>;
-
+export type ContentEditableEvent = React.SyntheticEvent<any, Event> & {
+  target: { value: string };
+};
+export type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
+export type DivProps = Modify<
+  JSX.IntrinsicElements["div"],
+  { onChange: (event: ContentEditableEvent) => void }
+>;
 
 export type TributeItem<T extends {}> = {
   index: number;
@@ -17,7 +25,7 @@ export type TributeItem<T extends {}> = {
   string: string;
 };
 
-export interface ITribute  {
+export interface ITribute {
   // 触发mentions的符号
   trigger?: string;
   // element to target for @mentions
@@ -49,7 +57,12 @@ export interface ITribute  {
   fillAttr?: string;
 
   //数据源
-  values: Array<{[key:string]:any}> | ((text: string, cb: (result: Array<{[key:string]:any}>) => void) => void);
+  values:
+    | Array<{ [key: string]: any }>
+    | ((
+        text: string,
+        cb: (result: Array<{ [key: string]: any }>) => void
+      ) => void);
 
   // specify whether a space is required before the trigger character
   requireLeadingSpace?: boolean;
@@ -73,8 +86,7 @@ export interface ITribute  {
   menuShowMinLength?: number;
 }
 
-
-export interface IAppProps  extends DivProps{
+export interface IAppProps extends DivProps {
   // value?: InnerHTML;
   id: string;
   html: string;
@@ -82,16 +94,13 @@ export interface IAppProps  extends DivProps{
   tagName?: string;
   className?: string;
   style?: Object;
-  placeholder?:string;
+  placeholder?: string;
   innerRef?: React.RefObject<HTMLElement> | Function;
-  onSelect?: (node?:any) => any;
-  onFocus:  (node?:any) => any;
-  // uploadImage?: {
-  //   visible?: boolean;
-  // },
-  TributeOptions: ITribute
+  onSelect?: (node?: any) => any;
+  onFocus?: (node?: any) => any;
+  TributeOptions?: ITribute;
 }
-const CMention:React.FC<IAppProps> = ({
+const CMention: React.FC<IAppProps> = ({
   id,
   onSelect,
   onChange,
@@ -107,7 +116,7 @@ const CMention:React.FC<IAppProps> = ({
   innerRef,
   TributeOptions,
   // ...restProps
-}) =>  {
+}) => {
   const {
     values,
     selectTemplate,
@@ -126,15 +135,15 @@ const CMention:React.FC<IAppProps> = ({
     positionMenu,
     autocompleteMode,
     searchOpts,
-    menuShowMinLength
-  } = TributeOptions
-  const idName = useMemo(() => `${id}-mentionList`, [id])
+    menuShowMinLength,
+  } = TributeOptions;
+  const idName = useMemo(() => `${id}-mentionList`, [id]);
   useEffect(() => {
     var tribute = new Tribute({
       values: values || [],
       selectTemplate,
       menuItemTemplate,
-      trigger: trigger || '@',
+      trigger: trigger || "@",
       selectClass,
       containerClass,
       itemClass,
@@ -148,36 +157,42 @@ const CMention:React.FC<IAppProps> = ({
       positionMenu,
       autocompleteMode,
       searchOpts,
-      menuShowMinLength
+      menuShowMinLength,
     });
-    let ele:any= document.getElementById(idName)
+    let ele: any = document.getElementById(idName);
     tribute.attach(ele);
-  }, [])
+  }, []);
 
   useEffect(() => {
-    document.querySelector(`#${idName}`)?.addEventListener("tribute-replaced", (e:any) =>  {
-      // console.log('选择到值', e?.detail?.item?.original, e?.detail?.item )
-      onSelect && e?.detail?.item?.original && onSelect(e.detail.item)
-  });
-  }, [])
-  return (
-      <ContentEditable
-        id={idName}
-        className={`${idName} mention-basic ${className}`}
-        innerRef={  innerRef}
-        html={html} // innerHTML of the editable div
-        disabled={disabled}       // use true to disable editing
-        onChange={(e) => onChange(e)} // handle innerHTML change
-        onBlur={onBlur}
-        onFocus={onFocus}
-        style={style}
-        tagName={tagName || 'div'}
-        placeholder={placeholder || ''}
-        // {...restProps}
+    document
+      .querySelector(`#${idName}`)
+      ?.addEventListener("tribute-replaced", (e: any) => {
+        // console.log('选择到值', e?.detail?.item?.original, e?.detail?.item )
+        onSelect && e?.detail?.item?.original && onSelect(e.detail.item);
+      });
+  }, []);
 
-      >
-      </ContentEditable>
+  //由于tributejs作用，使得即使设置了diablled
+  useEffect(() => {
+    setTimeout(() => {
+      let ele: any = document.querySelector(`#${idName}`);
+      ele && (ele.contentEditable = !disabled);
+    }, 1000);
+  }, [disabled]);
+  return (
+    <ContentEditable
+      id={idName}
+      className={`${idName} mention-basic ${className}`}
+      innerRef={innerRef}
+      html={html}
+      onChange={onChange}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      style={style}
+      tagName={tagName || "div"}
+      placeholder={placeholder || ""}
+    ></ContentEditable>
   );
-}
+};
 
 export default CMention;
